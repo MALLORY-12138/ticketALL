@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketCardView 布局草图</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+            max-width: 1200px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+        }
+
+        .phone-notch {
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: calc(100% - 30px);
+            background: #f2f2f7;
+            border-radius: 0 0 30px 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 24px 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .content-area {
+            height: calc(100% - 44px - 83px);
+            overflow-y: auto;
+            padding: 20px 16px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 20px;
+            padding-left: 4px;
+        }
+
+        .ticket-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .ticket-card-wrapper {
+            background: transparent;
+        }
+
+        .ticket-card {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .ticket-image {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ticket-image.movie {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .ticket-image.concert {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .ticket-image.exhibition {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .ticket-image-content {
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .ticket-type-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .ticket-image-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .ticket-image-date {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        .ticket-info {
+            padding: 14px 12px;
+        }
+
+        .ticket-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ticket-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ticket-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: #f5f5f7;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .ticket-type-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .ticket-date {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .ticket-links {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .link-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            background: rgba(0, 122, 255, 0.1);
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 500;
+            color: #007aff;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+
+        .link-pill:hover {
+            background: rgba(0, 122, 255, 0.15);
+        }
+
+        .link-pill svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 83px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 0.5px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 20px;
+            color: #8e8e93;
+            font-size: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .tab-item.active {
+            color: #007aff;
+        }
+
+        .tab-item svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .fab-button {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            z-index: 100;
+        }
+
+        .fab-button:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 6px 24px rgba(0, 122, 255, 0.5);
+        }
+
+        .fab-button svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+            font-weight: 700;
+        }
+
+        .design-spec {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+        }
+
+        .design-spec h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 24px;
+        }
+
+        .spec-section {
+            margin-bottom: 24px;
+        }
+
+        .spec-section h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .spec-item:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label {
+            font-size: 0.875rem;
+            color: #333;
+        }
+
+        .spec-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #007aff;
+        }
+
+        .color-swatch {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .swatch {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .swatch.primary { background: #007aff; }
+        .swatch.background { background: #f2f2f7; }
+        .swatch.card { background: #ffffff; }
+        .swatch.text { background: #1a1a1a; }
+
+        .layout-diagram {
+            margin-top: 16px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px dashed #ddd;
+        }
+
+        .diagram-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .diagram-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid #e0e0e0;
+        }
+
+        .diagram-image {
+            aspect-ratio: 3/4;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .diagram-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        .diagram-info {
+            padding: 12px;
+        }
+
+        .diagram-title-bar {
+            height: 14px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .diagram-meta {
+            display: flex;
+            gap: 6px;
+        }
+
+        .diagram-badge {
+            width: 50px;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+
+        .diagram-date {
+            flex: 1;
+            height: 20px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .diagram-links {
+            margin-top: 8px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .diagram-link {
+            width: 60px;
+            height: 20px;
+            background: rgba(0, 122, 255, 0.15);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎫 TicketCardView 布局草图</h1>
+        <p>TicketALL iOS App - 票据卡片组件设计</p>
+    </div>
+
+    <div class="container">
+        <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <span>🔋</span>
+                </div>
+                <div class="content-area">
+                    <div class="section-title">我的票根</div>
+                    <div class="ticket-grid">
+                        <div class="ticket-card-wrapper">
+                            <div class="ticket-card">
+                                <div class="ticket-image movie">
+                                    <div class="ticket-image-content">
+                                        <div class="ticket-type-icon">🎬</div>
+                                        <div class="ticket-image-title">星际穿越</div>
+                                        <div class="ticket-image-date">2024.04.15</div>
+                                    </div>
+                                </div>
+                                <div class="ticket-info">
+                                    <div class="ticket-title">星际穿越 - 重映版 IMAX</div>
+                                    <div class="ticket-meta">
+                                        <span class="ticket-type-badge">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                                                <line x1="7" y1="2" x2="7" y2="22"></line>
+                                                <line x1="17" y1="2" x2="17" y2="22"></line>
+                                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                                <line x1="2" y1="7" x2="7" y2="7"></line>
+                                                <line x1="2" y1="17" x2="7" y2="17"></line>
+                                                <line x1="17" y1="17" x2="22" y2="17"></line>
+                                                <line x1="17" y1="7" x2="22" y2="7"></line>
+                                            </svg>
+                                            电影
+                                        </span>
+                                        <span class="ticket-date">4月15日</span>
+                                    </div>
+                                    <div class="ticket-links">
+                                        <a href="#" class="link-pill">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                <polyline points="15 3 21 3 21 9"></polyline>
+                                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                                            </svg>
+                                            豆瓣
+                                        </a>
+                                        <a href="#" class="link-pill">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                                            </svg>
+                                            导航
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ticket-card-wrapper">
+                            <div class="ticket-card">
+                                <div class="ticket-image concert">
+                                    <div class="ticket-image-content">
+                                        <div class="ticket-type-icon">🎵</div>
+                                        <div class="ticket-image-title">五月天演唱会</div>
+                                        <div class="ticket-image-date">2024.05.01</div>
+                                    </div>
+                                </div>
+                                <div class="ticket-info">
+                                    <div class="ticket-title">五月天 - 人生无限公司 北京站</div>
+                                    <div class="ticket-meta">
+                                        <span class="ticket-type-badge">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M9 18V5l12-2v13"></path>
+                                                <circle cx="6" cy="18" r="3"></circle>
+                                                <circle cx="18" cy="16" r="3"></circle>
+                                            </svg>
+                                            演唱会
+                                        </span>
+                                        <span class="ticket-date">5月1日</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ticket-card-wrapper">
+                            <div class="ticket-card">
+                                <div class="ticket-image exhibition">
+                                    <div class="ticket-image-content">
+                                        <div class="ticket-type-icon">🎨</div>
+                                        <div class="ticket-image-title">莫奈作品展</div>
+                                        <div class="ticket-image-date">2024.04.20</div>
+                                    </div>
+                                </div>
+                                <div class="ticket-info">
+                                    <div class="ticket-title">莫奈与印象派大师展</div>
+                                    <div class="ticket-meta">
+                                        <span class="ticket-type-badge">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                                <polyline points="21 15 16 10 5 21"></polyline>
+                                            </svg>
+                                            展览
+                                        </span>
+                                        <span class="ticket-date">4月20日</span>
+                                    </div>
+                                    <div class="ticket-links">
+                                        <a href="#" class="link-pill">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                <polyline points="15 3 21 3 21 9"></polyline>
+                                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                                            </svg>
+                                            官网
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fab-button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </div>
+                <div class="tab-bar">
+                    <div class="tab-item active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        首页
+                    </div>
+                    <div class="tab-item" style="opacity: 0;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                        </svg>
+                        占位
+                    </div>
+                    <div class="tab-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        我的
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="design-spec">
+            <h2>📐 设计规格</h2>
+            
+            <div class="spec-section">
+                <h3>尺寸规范</h3>
+                <div class="spec-item">
+                    <span class="spec-label">卡片圆角</span>
+                    <span class="spec-value">20px</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">图片比例</span>
+                    <span class="spec-value">3:4</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">内边距</span>
+                    <span class="spec-value">14px / 12px</span>
+                </div>
+            </div>
+
+            <div class="spec-section">
+                <h3>颜色系统</h3>
+                <div class="color-swatch">
+                    <div class="swatch primary" title="主色调 #007aff"></div>
+                    <div class="swatch background" title="背景色 #f2f2f7"></div>
+                    <div class="swatch card" title="卡片白 #ffffff"></div>
+                    <div class="swatch text" title="文字 #1a1a1a"></div>
+                </div>
+            </div>
+
+            <div class="spec-section">
+                <h3>卡片结构</h3>
+                <div class="layout-diagram">
+                    <div class="diagram-title">TicketCardView 层级结构</div>
+                    <div class="diagram-card">
+                        <div class="diagram-image">
+                            <span class="diagram-label">票据图片区</span>
+                        </div>
+                        <div class="diagram-info">
+                            <div class="diagram-title-bar"></div>
+                            <div class="diagram-meta">
+                                <div class="diagram-badge"></div>
+                                <div class="diagram-date"></div>
+                            </div>
+                            <div class="diagram-links">
+                                <div class="diagram-link"></div>
+                                <div class="diagram-link"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="spec-section">
+                <h3>组件构成</h3>
+                <div class="spec-item">
+                    <span class="spec-label">图片容器</span>
+                    <span class="spec-value">AsyncImage</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">类型徽章</span>
+                    <span class="spec-value">Capsule</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">链接按钮</span>
+                    <span class="spec-value">胶囊按钮</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
